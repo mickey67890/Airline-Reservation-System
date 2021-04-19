@@ -57,7 +57,7 @@ int setPath(char* startKey, char* endKey,int vertexCount);
  */
  
 int findItineraries(char* startKey, char* endKey,int vertexCount,int sort);
-*	This function prints the flight data
+/*	This function prints the flight data
  *		Arguments - pFlight - pointers to flight.
  *		          - count - orders of flight.
  */
