@@ -1,6 +1,6 @@
 CX654,Cathay Pacific
 Bangkok,Thailand,15:05
-Hongkong,Hongkong,18:55
+Hongkong,Hongkong,10:55
 7050
 30,29,28,27,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30
 SQ712,Singapore Airlines
