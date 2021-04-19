@@ -94,30 +94,6 @@ NODE_T* findNode(NODE_T* pCurrent,char city[],char country[])
 	if(found != NULL)
 		return found;
 	return findNode(pCurrent->right,city,country);
-	/*if(pCurrent == NULL)
-	{
-		return NULL;
-	}
-	if(strcasecmp(city,pCurrent->city) > 0)
-	{
-		pFound = findNode(pCurrent -> right,city,country);
-	}
-	else if(strcasecmp(city,pCurrent->city) < 0)
-	{
-		pFound = findNode(pCurrent -> left,city,country);
-	}
-	else
-	{
-		if(strcasecmp(country,pCurrent -> country) == 0)
-		{
-			pFound = pCurrent;
-		}
-		else
-		{
-			pFound = findNode(pCurrent -> left,city,country);
-		}
-	}
-	return pCurrent;*/
 }	
 
 /* Get information of the fl ightsand add it to the list */
