@@ -6,7 +6,7 @@ EXECUTABLES= userInterface$(EXECEXT)
 
 all : $(EXECUTABLES)
 
-minPriorityQueue.o :	minPriorityQueueMod.c minPriorityQueueMod.h
+minPriorityQueueMod.o :	minPriorityQueueMod.c minPriorityQueueMod.h
 	gcc -c minPriorityQueueMod.c
 
 network.o :		network.c network.h minPriorityQueueMod.h
@@ -22,8 +22,8 @@ tree.o :	tree.c network.h
 userInterface.o :	userInterface.c network.h itineraries.h
 	gcc -c userInterface.c
 	
-userInterface$(EXECEXT) :	userInterface.o network.o minPriorityQueue.o tree.o itinerary.o
-	gcc -o userInterface$(EXECEXT) userInterface.o network.o minPriorityQueue.o tree.o itinerary.o
+userInterface$(EXECEXT) :	userInterface.o network.o minPriorityQueueMod.o tree.o itinerary.o
+	gcc -o userInterface$(EXECEXT) userInterface.o network.o minPriorityQueueMod.o tree.o itinerary.o
 	
 	
 clean : 
