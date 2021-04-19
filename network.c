@@ -94,98 +94,58 @@ NODE_T* findNode(NODE_T* pCurrent,char city[],char country[])
 	if(found != NULL)
 		return found;
 	return findNode(pCurrent->right,city,country);
-	/*if(pCurrent == NULL)
-	{
-		return NULL;
-	}
-	if(strcasecmp(city,pCurrent->city) > 0)
-	{
-		pFound = findNode(pCurrent -> right,city,country);
-	}
-	else if(strcasecmp(city,pCurrent->city) < 0)
-	{
-		pFound = findNode(pCurrent -> left,city,country);
-	}
-	else
-	{
-		if(strcasecmp(country,pCurrent -> country) == 0)
-		{
-			pFound = pCurrent;
-		}
-		else
-		{
-			pFound = findNode(pCurrent -> left,city,country);
-		}
-	}
-	return pCurrent;*/
 }	
 
 /* Get information of the fl ightsand add it to the list */
 /* 'root' is the root node */	
 void createFlights(NODE_T* root)
-	{
-	FILE * pIn = NULL;				/* Input file */
+{
+	FILE * pIn = NULL;			/* Input file */
 	FLIGHT_T* newFlight = NULL;		/* New flight to be added */
-	TIME_T * departure = NULL;
-	TIME_T * arrive = NULL;
-	char input[256];				/* The input from file */
+	char input[256];			/* The input from file */
 	char cityDepart[32];			/* The city name of the departure location */
-    char countryDepart[32];			/* The country of the departure location */
+	char countryDepart[32];			/* The country of the departure location */
 	char cityArrive[32];			/* The city name of the arrival location */
-    char countryArrive[32];			/* The country of the arrival location */
-	int check = 0;					/* Check which line to read */
-	int round = 0;					/* Check amount to loop */
+        char countryArrive[32];			/* The country of the arrival location */
+	int check = 0;				/* Check which line to read */
+	int round = 0;				/* Check amount to loop */
 	
 	pIn = fopen("flights.txt","r");
-    if (pIn == NULL)
-		{
-    	fprintf(stderr,"Error opening flights file - exiting\n");
+        if (pIn == NULL)
+	{
+        	fprintf(stderr,"Error opening flights file - exiting\n");
 		exit(1);
-		}
-	
-    while(fgets(input,sizeof(input),pIn) != NULL)
+	}
+        while(fgets(input,sizeof(input),pIn) != NULL)
     	{
     		check++;
-    		switch(check%5)
-    		{
-    			case 0 :
-    				newFlight->origin = findNode(root,cityDepart,countryDepart);	
-				newFlight->destination = findNode(root,cityArrive,countryArrive);
-				if (fListHead == NULL)
-					fListHead = newFlight;
-				else
-					fListTail->next = newFlight;
-				newFlight -> duration = diffTime(newFlight -> departure,newFlight -> arrive);
-				fListTail = newFlight;
-				flightCount++;		
-				check = 0;
-				break;
-    			case 1 :			
-				newFlight = (FLIGHT_T*)calloc(1,sizeof(FLIGHT_T));
-				departure = (TIME_T *) calloc(1,sizeof(TIME_T));
-				arrive = (TIME_T *) calloc(1,sizeof(TIME_T));
-				
-				newFlight -> departure = departure;
-				newFlight -> arrive = arrive;
-				
-				sscanf(input,"%[^,],%[^\n]",newFlight->flightNumber,newFlight->airline);
-				break;
-			case 2 :
-				sscanf(input,"%[^,],%[^,],%d:%d",cityDepart,countryDepart,&newFlight -> departure -> hour,&newFlight -> departure -> min);
-				break;
-			case 3 :
-		
-				sscanf(input,"%[^,],%[^,],%d:%d",cityArrive,countryArrive,&newFlight -> arrive -> hour,&newFlight -> arrive -> min);
-				break;
-			case 4 :
-				sscanf(input,"%d",&newFlight->price);
-				for(round = 0; round < 31; round++)
-				{
-					fscanf(pIn,"%d,",&newFlight->seat[round]);
-				}
-				break;
+		if(check == 1)
+		{
+			newFlight = (FLIGHT_T*)calloc(1,sizeof(FLIGHT_T));
+			sscanf(input,"%[^,],%[^\n]",newFlight->flightNumber,newFlight->airline);
 		}
-		
+		else if(check == 2)
+			sscanf(input,"%[^,],%[^,],%d:%d",cityDepart,countryDepart,&newFlight->hourDepart,&newFlight->minuteDepart);
+		else if(check == 3)
+			sscanf(input,"%[^,],%[^,],%d:%d",cityArrive,countryArrive,&newFlight->hourArrive,&newFlight->minuteArrive);
+		else if(check == 4)
+		{
+			sscanf(input,"%d",&newFlight->price);
+			for(round = 0; round < 31; round++)
+				fscanf(pIn,"%d,",&newFlight->seat[round]);
+		}
+		else if(check == 5)
+		{
+		newFlight->origin = findNode(root,cityDepart,countryDepart);	
+		newFlight->destination = findNode(root,cityArrive,countryArrive);
+		if (fListHead == NULL)
+			fListHead = newFlight;
+		else
+			fListTail->next = newFlight;
+		fListTail = newFlight; 	
+		flightCount++;		
+		check = 0;
+		}
 	}
 }
 
@@ -194,64 +154,64 @@ void createFlights(NODE_T* root)
 /* 'pFlight' is the flight node */
 /* 'check' check whether to match origin (if 1) or destiantion (if 2) */	
 VERTEX_T * findVertex(FLIGHT_T* pFlight,int check)
-	{
+{
 	VERTEX_T* pVertex = NULL;		/* The vertex found */
 	VERTEX_T* currentVertex = NULL;	/* The current vertex */
 	int round = 0;					/* Check amount to loop */
 	/* Find origin vertex */	
 	if(check == 1)
-		{
+	{
 		currentVertex = vListHead;
 		for(round = 0;round < vertexCount;round++)
-			{
-			if((strcmp(currentVertex->location->city,pFlight->origin->city) == 0) && (strcmp(currentVertex->location->country,pFlight->origin->country) == 0))
-				{
-				pVertex = currentVertex;
-				break;
-				}
-			else
-				currentVertex = currentVertex->next;
-			}
+		{
+		if((strcmp(currentVertex->location->city,pFlight->origin->city) == 0) && (strcmp(currentVertex->location->country,pFlight->origin->country) == 0))
+		{
+			pVertex = currentVertex;
+			break;
 		}
+		else
+			currentVertex = currentVertex->next;
+		}
+	}
 		
 	/* Find destination vertex */
 	else if(check == 2)
-		{
+	{
 		
 		currentVertex = vListHead;
 		
 		for(round = 0;round < vertexCount;round++)
-			{
+		{
 			
 			if((strcmp(currentVertex->location->city,pFlight->destination->city) == 0) && (strcmp(currentVertex->location->country,pFlight->destination->country) == 0))
-				{
+			{
 				pVertex = currentVertex;	
 				break;
-				}
+			}
 			else
 				currentVertex = currentVertex->next;
-			}
 		}
+	}
 		
 	
 	return pVertex;
-	}
+}
 
 /* Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. */	
 void addEdge(FLIGHT_T* pFlight)
-	{
-    VERTEX_T* pFromVtx = NULL;		/* The origin vertex */
-    VERTEX_T* pToVtx = NULL;		/* The destination vertex */
-    EDGE_T* newEdge = NULL;			/* The new edge to be created */
+{
+        VERTEX_T* pFromVtx = NULL;		/* The origin vertex */
+        VERTEX_T* pToVtx = NULL;		/* The destination vertex */
+        EDGE_T* newEdge = NULL;			/* The new edge to be created */
     
-    pFromVtx = findVertex(pFlight,1);
-    pToVtx = findVertex(pFlight,2);
-    printf("%s -> %s\n",pFromVtx -> location -> city,pToVtx -> location -> city);
+        pFromVtx = findVertex(pFlight,1);
+        pToVtx = findVertex(pFlight,2);
+        printf("%s -> %s\n",pFromVtx -> location -> city,pToVtx -> location -> city);
 	if ((pFromVtx == NULL) || (pToVtx == NULL))
-		{
+	{
 		printf("Fail to find vertex - exiting");
 		exit(1);
-		}
+	}
     	else
 	{
 		newEdge = (EDGE_T*) calloc(1,sizeof(EDGE_T));
@@ -261,7 +221,7 @@ void addEdge(FLIGHT_T* pFlight)
 			exit(1);
 		}
     		else
-			{
+		{
 			newEdge->pVertex = pToVtx;
 			newEdge->flights = pFlight; 
 			if (pFromVtx->edgeTail != NULL)
@@ -272,13 +232,13 @@ void addEdge(FLIGHT_T* pFlight)
 			newEdge -> weight[1] = newEdge -> flights -> price;
 			newEdge -> weight[2] = 1;
 			pFromVtx->edgeTail = newEdge;
-			}
+		}
     	}
 }
 
 /* Create the location network */
 int network()
-	{
+{
 	TREE_T* pTree;					/* The tree created by tree.c */
 	FLIGHT_T* currentFlight = NULL;		/* The current flight */
 	int round = 0;
@@ -289,18 +249,17 @@ int network()
 	traverseInOrder(pTree->root,&addVertex);
 	
 	/* Create flight list */
-	printf("tree\n");
 	createFlights(pTree->root);
 	
 	/* Connect locations (vertex) using flights (edges) */
 	
 	currentFlight = fListHead;
 	for(round = 0;round < flightCount;round++)
-		{
+	{
 		addEdge(currentFlight);
 		currentFlight = currentFlight->next;
-		}
 	}
+}
 
 /*	
  *	This function resets the addDay time indicator to zero
@@ -333,11 +292,11 @@ void setZero()
  */
 void colorAll(int color)
 {
-    VERTEX_T* pVertex = vListHead;
-    while (pVertex != NULL)
+       VERTEX_T* pVertex = vListHead;
+       while (pVertex != NULL)
        {
-       pVertex->color = color;
-       pVertex = pVertex->next;
+           pVertex->color = color;
+           pVertex = pVertex->next;
        }
 }
 
@@ -348,16 +307,16 @@ void colorAll(int color)
  */
 void initAll()
 {
-    VERTEX_T* pVertex = vListHead;
-    while (pVertex != NULL)
-       {
-       pVertex->dValue[0] = HUGEVALUE;
-       pVertex -> dValue[1] = HUGEVALUE;
-       pVertex -> dValue[2] = HUGEVALUE;
-       pVertex->parent = NULL;
-       enqueueMin(pVertex);
-       pVertex = pVertex->next;
-       }
+        VERTEX_T* pVertex = vListHead;
+	while (pVertex != NULL)
+        {
+        	pVertex->dValue[0] = HUGEVALUE;
+       		pVertex -> dValue[1] = HUGEVALUE;
+       		pVertex -> dValue[2] = HUGEVALUE;
+	       	pVertex->parent = NULL;
+       		enqueueMin(pVertex);
+       		pVertex = pVertex->next;
+       	}
 }
 
 /** Finds the vertex that holds the passed key
@@ -371,25 +330,25 @@ void initAll()
  */
 VERTEX_T * findVertexByKey(char* key, VERTEX_T** pPred) 
 {
-    VERTEX_T * pFoundVtx = NULL;
-    VERTEX_T * pCurVertex = vListHead;
-    *pPred = NULL;
-    /* while there are vertices left and we haven't found
-     * the one we want.
-     */
-    while ((pCurVertex != NULL) && (pFoundVtx == NULL))
-       {
-       if (strcasecmp(pCurVertex-> location -> city,key) == 0)
-          {
-	  pFoundVtx = pCurVertex;
-	  }
-       else
-          {
-	  *pPred = pCurVertex;
-          pCurVertex = pCurVertex->next;
-          }
-       }
-    return pFoundVtx;
+    	VERTEX_T * pFoundVtx = NULL;
+	VERTEX_T * pCurVertex = vListHead;
+    	*pPred = NULL;
+    	/* while there are vertices left and we haven't found
+     	* the one we want.
+     	*/
+    	while ((pCurVertex != NULL) && (pFoundVtx == NULL))
+       	{
+		if (strcasecmp(pCurVertex-> location -> city,key) == 0)
+          	{
+	  		pFoundVtx = pCurVertex;
+	  	}
+       		else
+          	{
+	  		*pPred = pCurVertex;
+          		pCurVertex = pCurVertex->next;
+          	}
+	}
+	return pFoundVtx;
 }
 
 
