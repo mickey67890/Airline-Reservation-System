@@ -16,7 +16,7 @@
 #define GRAY  1
 #define BLACK 2
 
-/* Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. */
+/* Adapted with permission from S. Goldin in file [linkedListNetwork.c]. */
 VERTEX_T* vListHead = NULL;			/* Head of the vertices list */
 VERTEX_T* vListTail = NULL;			/* Tail of the vertices list */
 
@@ -25,6 +25,38 @@ FLIGHT_T* fListTail = NULL;			/* Tail of the flights list */
 
 int vertexCount = 0;
 int flightCount = 0;
+
+/* Adapted with permission from freeAdjacencyList function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeEdgeList(VERTEX_T *pVertex)
+	{
+	EDGE_T* pCurRef = pVertex->edgeHead;
+	while (pCurRef != NULL)
+		{
+		EDGE_T* pDelRef = pCurRef;
+		pCurRef = pCurRef->next;
+		free(pDelRef->flights);
+		free(pDelRef);
+		}
+	pVertex->edgeHead = NULL;
+	pVertex->edgeTail = NULL;
+	}
+	
+/* Adapted with permission from  clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeGraph()
+	{
+    VERTEX_T * pCurVertex = vListHead;
+    while (pCurVertex != NULL)
+    	{
+    	freeEdgeList(pCurVertex);
+    	VERTEX_T* pDelVtx = pCurVertex;
+    	pCurVertex = pCurVertex->next;
+    	free(pDelVtx->location);
+    	free(pDelVtx);
+		}
+
+    vListHead = NULL;  
+    vListTail = NULL; 
+	}	
 
 /* Get information of the node and add it to the list as a vertex */
 /* 'pNode' is the current node */
@@ -61,7 +93,7 @@ void addVertex(NODE_T* pNode)
 	vertexCount++;
 	}
 
-/* Adapted with permission from function by S. Goldin in file [simpleBinaryTree.c]. */
+/* Adapted with permission from function traverseInOrder by S. Goldin in file [simpleBinaryTree.c]. */
 void traverseInOrder(NODE_T* pCurrent,void (*nodeFunction)(NODE_T* pNode))
 	{
     if (pCurrent->left != NULL)
@@ -91,7 +123,7 @@ NODE_T* findNode(NODE_T* pCurrent,char city[32],char country[32])
 	return findNode(pCurrent->right,city,country);
 	}	
 
-/* Get information of the fl ightsand add it to the list */
+/* Get information of the flights and add it to the list */
 /* 'root' is the root node */	
 void createFlights(NODE_T* root)
 	{
@@ -187,7 +219,7 @@ VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
 	return pVertex;
 	}
 
-/* Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. */	
+/* Adapted with permission from function addEdge by S. Goldin in file [linkedListNetwork.c]. */	
 void addEdge(FLIGHT_T* pFlight)
 	{
     VERTEX_T* pFromVtx = NULL;		/* The origin vertex */
@@ -244,5 +276,5 @@ int network()
 		{
 		addEdge(currentFlight);
 		currentFlight = currentFlight->next;
-		}
+		}	
 	}

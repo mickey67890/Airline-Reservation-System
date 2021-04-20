@@ -70,15 +70,6 @@ typedef struct _vertex
 /* Return the pointer to the tree */
 TREE_T* createTree();
 
-/* Free the node */
-/* 'person' is the node */
-void freeNode(NODE_T* node);
-
-/* Post order traverse the tree and free each node */
-/* 'person' is the current node */
-/* 'function' is the the function to be executed */
-void freeAll(NODE_T* node,void (*function)(NODE_T* node));
-
 /* Free the tree */
 /* 'pTree' is the tree */
 void freeTree(TREE_T * pTree);
@@ -99,6 +90,9 @@ NODE_T* findNode(NODE_T* pCurrent,char city[32],char country[32]);
 /* 'pFlight' is the flight node */
 /* 'check' check whether to match origin (if 1) or destiantion (if 2) */	
 VERTEX_T* findVertex(FLIGHT_T* pFlight,int check);
+
+/* Adapted with permission from clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeGraph();
 
 /* Create the location network */
 int network();
