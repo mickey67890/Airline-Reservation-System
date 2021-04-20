@@ -272,6 +272,7 @@ int network()
 		currentFlight = currentFlight->next;
 		}
 	}
+	return flightCount;
 
 /*	
  *	This function resets the addDay time indicator to zero
