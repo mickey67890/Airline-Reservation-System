@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "minPriorityQueue.h"
+#include "minPriorityQueueMod.h"
 
 
 /* Structure that represents one item of the list */

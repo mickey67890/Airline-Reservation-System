@@ -10,7 +10,7 @@
 
 #include "itineraries.h"
 #include "network.h"
-#include "minPriorityQueue.h"
+#include "minPriorityQueueMod.h"
 
 #define WHITE 0
 #define GRAY  1
@@ -161,7 +161,7 @@ int findItineraries(char* startKey, char* endKey,int vertexCount,int sort)
 	
 	if(pVer1 == NULL || pVer2 == NULL)
 	{
-		pirntf("The location does not exist\n");
+		printf("The location does not exist\n");
 		return -1;
 	}
 	setZero();
