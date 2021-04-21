@@ -10,7 +10,7 @@
 
 #include "itineraries.h"
 #include "network.h"
-#include "minPriorityQueue.h"
+#include "minPriorityQueueMod.h"
 
 #define WHITE 0
 #define GRAY  1
@@ -92,7 +92,7 @@ int compareVertices(void * pV1, void * pV2,int sort)
  * Adapted with permission from function by S. Goldin's Lab 9-1
  * solution in file [linkedListGraph.c].
  */
-int setPath(char* startKey, char* endKey,int vertexCount)
+int setPath(char* startKey, char* endKey)
 {
 	VERTEX_T * pVer1 = NULL;
 	VERTEX_T * pVer2 = NULL;
@@ -106,11 +106,10 @@ int setPath(char* startKey, char* endKey,int vertexCount)
 	
 	pVer1 = (VERTEX_T *)findVertexByKey(startKey,&pDummy);
 	pVer2 = (VERTEX_T *)findVertexByKey(endKey,&pDummy);
-	VERTEX_T ** path = calloc(vertexCount,sizeof(VERTEX_T*));
+	
 	pCurrent = pVer2;
 	while(pCurrent != NULL)
 	{
-		path[pathCount] = pCurrent;
 		edge = pCurrent -> parentEdge;
 		pCurrent = pCurrent -> parent;
 		if(pCurrent != NULL)
@@ -119,19 +118,26 @@ int setPath(char* startKey, char* endKey,int vertexCount)
 		}
 		pathCount ++;
 	}
-	for(loop = pathCount -1 ;loop >= 0;loop--)
+	
+	pCurrent = pVer1;
+	
+	while(pCurrent != NULL)
 	{
-		if(loop > 0)
+		edge = pCurrent -> nextEdge;
+		if(edge == NULL)
 		{
-			if(loop<pathCount-1)
+			break;
+		}
+		if(pCurrent != pVer2)
+		{
+			if(pCurrent != pVer1)
 			{
-				diffTime(path[loop] -> parentEdge -> flights -> arrive,path[loop] -> nextEdge -> flights -> departure);
+				diffTime(pCurrent -> parentEdge -> flights -> arrive,pCurrent -> nextEdge -> flights -> departure);
 			}
-			diffTime(path[loop] -> nextEdge -> flights -> departure,path[loop] -> nextEdge -> flights -> arrive);
-				
-		}	
+			diffTime(pCurrent  -> nextEdge -> flights -> departure,pCurrent -> nextEdge -> flights -> arrive);
+		}
+		pCurrent = edge -> pVertex;
 	}
-	free(path);
 	return pathCount;
 }
 /** Finds the lowest weight path from one vertex to 
@@ -143,14 +149,14 @@ int setPath(char* startKey, char* endKey,int vertexCount)
  * Returns -1 if either key is invalid.
  * Adapted with permission from function by S. Goldin in file [linkedListNetwork.c] and [linkedListGraph.c].
  */
-int findItineraries(char* startKey, char* endKey,int vertexCount,int sort)
+int findItineraries(char* startKey, char* endKey,int sort)
 {
 	VERTEX_T * pVer1 = NULL;
 	VERTEX_T * pVer2 = NULL;
 	VERTEX_T * pDummy = NULL;
 	VERTEX_T * pCurrent = NULL;
 	VERTEX_T * adjacent = NULL;
-	int pathCount = 0;
+	int result = 0;
     	
     	EDGE_T * previous = NULL;
     	
@@ -161,7 +167,7 @@ int findItineraries(char* startKey, char* endKey,int vertexCount,int sort)
 	
 	if(pVer1 == NULL || pVer2 == NULL)
 	{
-		pirntf("The location does not exist\n");
+		printf("The location does not exist\n");
 		return -1;
 	}
 	setZero();
@@ -210,14 +216,15 @@ int findItineraries(char* startKey, char* endKey,int vertexCount,int sort)
 	}
 	if(pVer2 -> parent != NULL)
 	{
-		printf("Found\n");
-		pathCount = setPath(startKey,endKey,vertexCount);
+		printf("Searching Found\n");
+		setPath(startKey,endKey);
+		result = 1;
 	}
 	else
 	{
-		printf("Can not reach to\n");
+		result = 0;
 	}
-	return pathCount;
+	return result;
 }
 /*	This function prints the flight data
  *		Arguments - pFlight - pointers to flight.
@@ -260,6 +267,7 @@ int printPath(char * originVertex,char * desVertex)
 		printf("The location does not exist\n");
 		return success;
 	}
+	printf("Here's the best itinerary from %s to %s\n",startVertex -> location -> city,endVertex -> location -> city);
 	while(pCurrent != NULL)
 	{
 		currentFlight = pCurrent -> nextEdge;

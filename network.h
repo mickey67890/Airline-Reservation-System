@@ -53,14 +53,20 @@ typedef struct _edge
 	void* pVertex;  				/* Pointer to the VERTEX_T this item refers to */
 	FLIGHT_T* flights;				/* The data of the flight this edge represent */
 	struct _edge* next;				/* Next item in the edge list */
-	int weight[3];
+	int weight[3];					/* The array size of 3 that stores the flight's data
+							 * that use in find the best itinerary from the criteria. 
+							 * Index 0 holds the duration , index 1 holds the price
+							 * and index 2 holds the segment value (1) */
 	} EDGE_T;
 
 /* For the key of this vertex, use both city and country variable of locations */
 typedef struct _vertex
 	{
 	NODE_T* location;				/* The location of this vertex */
-	int dValue[3];					/* Total weight so far, for Dijkstra's algo */ 
+	int dValue[3];					/* Total weight so far, for Dijkstra's algorithm
+							 * Index 0 holds the duration , index 1 holds the price
+							 * and index 2 holds the segment value (1) */
+							 
 	int color;					/* Used for coloring the vertices during traversal */
 	struct _vertex* parent;				/* Pointer to parent vertex */  
 	struct _vertex* next;				/* Next vertex in the list */
@@ -75,7 +81,7 @@ typedef struct _vertex
 /*****************/
 /* Create the location tree */
 /* Return the pointer to the tree */
-TREE_T* createTree();
+TREE_T * createTree();
 
 /* Free the node */
 /* 'person' is the node */
@@ -108,7 +114,10 @@ NODE_T* findNode(NODE_T* pCurrent,char city[32],char country[32]);
 VERTEX_T* findVertex(FLIGHT_T* pFlight,int check);
 
 /* Create the location network */
-int network();
+TREE_T * network();
+
+/* Adapted with permission from clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeGraph();
 /********************/
 
 /* Debug Functions */
@@ -123,9 +132,11 @@ void printNodeDataDebug(NODE_T* node);
 void printAllDebug(NODE_T* node,void (*function)(NODE_T* node));
 /*******************/
 
+/* Dijkstra's initialize functions */
+/*******************/
 /*	
  *	This function resets the addDay time indicator to zero
- *	to start new requesting itinerary.
+ *	in starting new requesting itinerary.
  */
 void setZero();
 /** Color all vertices to the passed color.
