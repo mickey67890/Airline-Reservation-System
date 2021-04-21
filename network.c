@@ -28,7 +28,38 @@ FLIGHT_T* fListTail = NULL;			/* Tail of the flights list */
 int vertexCount = 0;
 int flightCount = 0;
 
+/* Adapted with permission from freeAdjacencyList function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeEdgeList(VERTEX_T *pVertex)
+	{
+	EDGE_T* pCurRef = pVertex->edgeHead;
+	while (pCurRef != NULL)
+		{
+		EDGE_T* pDelRef = pCurRef;
+		pCurRef = pCurRef->next;
+		free(pDelRef->flights);
+		free(pDelRef);
+		}
+	pVertex->edgeHead = NULL;
+	pVertex->edgeTail = NULL;
+	}
+	
+/* Adapted with permission from  clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeGraph()
+	{
+    VERTEX_T * pCurVertex = vListHead;
+    while (pCurVertex != NULL)
+    	{
+    	freeEdgeList(pCurVertex);
+    	VERTEX_T* pDelVtx = pCurVertex;
+    	pCurVertex = pCurVertex->next;
+    	free(pDelVtx->location);
+    	free(pDelVtx);
+		}
 
+    vListHead = NULL;  
+    vListTail = NULL; 
+	}
+	
 /* Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. */
 /* Get information of the node and add it to the list as a vertex */
 /* 'pNode' is the current node */
@@ -217,7 +248,6 @@ void addEdge(FLIGHT_T* pFlight)
     
     pFromVtx = findVertex(pFlight,1);
     pToVtx = findVertex(pFlight,2);
-    printf("%s -> %s\n",pFromVtx -> location -> city,pToVtx -> location -> city);
 	if ((pFromVtx == NULL) || (pToVtx == NULL))
 		{
 		printf("Fail to find vertex - exiting");
@@ -248,7 +278,7 @@ void addEdge(FLIGHT_T* pFlight)
 }
 
 /* Create the location network */
-int network()
+TREE_T * network()
 	{
 	TREE_T* pTree;					/* The tree created by tree.c */
 	FLIGHT_T* currentFlight = NULL;		/* The current flight */
@@ -260,7 +290,6 @@ int network()
 	traverseInOrder(pTree->root,&addVertex);
 	
 	/* Create flight list */
-	printf("tree\n");
 	createFlights(pTree->root);
 	
 	/* Connect locations (vertex) using flights (edges) */
@@ -271,9 +300,8 @@ int network()
 		addEdge(currentFlight);
 		currentFlight = currentFlight->next;
 		}
-	return flightCount;
+		return pTree;
 	}
-	
 
 /*	
  *	This function resets the addDay time indicator to zero

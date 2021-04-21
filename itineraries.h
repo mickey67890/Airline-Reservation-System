@@ -45,7 +45,7 @@ int compareVertices(void * pV1, void * pV2,int sort);
  * solution in file [linkedListGraph.c].
  */
  
-int setPath(char* startKey, char* endKey,int vertexCount);
+int setPath(char* startKey, char* endKey);
 /** Finds the lowest weight path from one vertex to 
  * another through the network using Dijkstra's
  * algorithm. 
@@ -56,7 +56,7 @@ int setPath(char* startKey, char* endKey,int vertexCount);
  * Adapted with permission from function by S. Goldin in file [linkedListNetwork.c] and [linkedListGraph.c].
  */
  
-int findItineraries(char* startKey, char* endKey,int vertexCount,int sort);
+int findItineraries(char* startKey, char* endKey,int sort);
 /*	This function prints the flight data
  *		Arguments - pFlight - pointers to flight.
  *		          - count - orders of flight.
