@@ -26,6 +26,8 @@ FLIGHT_T* fListTail = NULL;			/* Tail of the flights list */
 int vertexCount = 0;
 int flightCount = 0;
 
+/* Free the adjacencyList for a vertex */
+/* 'pVertex'  Vertex whose edges we want to delete */
 /* Adapted with permission from freeAdjacencyList function by S. Goldin in file [linkedListNetwork.c]. */	
 void freeEdgeList(VERTEX_T *pVertex)
 	{
@@ -40,7 +42,8 @@ void freeEdgeList(VERTEX_T *pVertex)
 	pVertex->edgeHead = NULL;
 	pVertex->edgeTail = NULL;
 	}
-	
+
+/* Free all memory associated with the graph and reset all parameters */
 /* Adapted with permission from  clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
 void freeGraph()
 	{
@@ -85,6 +88,10 @@ void addVertex(NODE_T* pNode)
 	vertexCount++;
 	}
 
+/* Traverse a tree (in order traversal) and execute the */
+/* function 'nodeFunction' on each element */
+/* 'pCurrent' is the current node */
+/* 'nodeFunction' is function to execute on each node */
 /* Adapted with permission from function traverseInOrder by S. Goldin in file [simpleBinaryTree.c]. */
 void traverseInOrder(NODE_T* pCurrent,void (*nodeFunction)(NODE_T* pNode))
 	{
@@ -215,6 +222,8 @@ VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
 	return pVertex;
 	}
 
+/* Add an edge between two vertices */
+/* 'pFlight' is the flight the represent the edge */
 /* Adapted with permission from function addEdge by S. Goldin in file [linkedListNetwork.c]. */	
 void addEdge(FLIGHT_T* pFlight)
 	{
