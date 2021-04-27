@@ -78,6 +78,10 @@ void freeTree(TREE_T * pTree);
 
 /* Location Network */
 /********************/
+/* Traverse a tree (in order traversal) and execute the */
+/* function 'nodeFunction' on each element */
+/* 'pCurrent' is the current node */
+/* 'nodeFunction' is function to execute on each node */
 /* Adapted with permission from function by S. Goldin in file [simpleBinaryTree.c]. */
 void traverseInOrder(NODE_T* pCurrent,void (*nodeFunction)(NODE_T* pNode));
 
@@ -92,6 +96,7 @@ NODE_T* findNode(NODE_T* pCurrent,char city[32],char country[32]);
 /* 'check' check whether to match origin (if 1) or destiantion (if 2) */	
 VERTEX_T* findVertex(FLIGHT_T* pFlight,int check);
 
+/* Free all memory associated with the graph and reset all parameters */
 /* Adapted with permission from clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
 void freeGraph();
 
