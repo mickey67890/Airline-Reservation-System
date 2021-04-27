@@ -16,7 +16,7 @@
 #define GRAY  1
 #define BLACK 2
 
-/* Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. */
+/* Adapted with permission from S. Goldin in file [linkedListNetwork.c]. */
 VERTEX_T* vListHead = NULL;			/* Head of the vertices list */
 VERTEX_T* vListTail = NULL;			/* Tail of the vertices list */
 
@@ -26,31 +26,57 @@ FLIGHT_T* fListTail = NULL;			/* Tail of the flights list */
 int vertexCount = 0;
 int flightCount = 0;
 
+/* Adapted with permission from freeAdjacencyList function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeEdgeList(VERTEX_T *pVertex)
+	{
+	EDGE_T* pCurRef = pVertex->edgeHead;
+	while (pCurRef != NULL)
+		{
+		EDGE_T* pDelRef = pCurRef;
+		pCurRef = pCurRef->next;
+		free(pDelRef->flights);
+		free(pDelRef);
+		}
+	pVertex->edgeHead = NULL;
+	pVertex->edgeTail = NULL;
+	}
+	
+/* Adapted with permission from  clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeGraph()
+	{
+    VERTEX_T * pCurVertex = vListHead;
+    while (pCurVertex != NULL)
+    	{
+    	freeEdgeList(pCurVertex);
+    	VERTEX_T* pDelVtx = pCurVertex;
+    	pCurVertex = pCurVertex->next;
+    	free(pDelVtx->location);
+    	free(pDelVtx);
+		}
+
+    vListHead = NULL;  
+    vListTail = NULL; 
+	}	
+
 /* Get information of the node and add it to the list as a vertex */
 /* 'pNode' is the current node */
 void addVertex(NODE_T* pNode)
 	{
 	NODE_T* newNode = NULL;			/* New node for the vertex */
 	VERTEX_T* newVertex = NULL;		/* New node to be added */
+	char* key = pNode->city;		/* The city and country combine into one string as key */ 
 	
-	/* Create a new node to take informations of the current node */
-	newNode = (NODE_T*)calloc(1,sizeof(NODE_T));
-	if(newNode == NULL)
-		{
-		printf("Fail to allocate new node - exiting");
-		exit(1);
-		}
-	strcpy(newNode->city,pNode->city);
-	strcpy(newNode->country,pNode->country);
-	
-	/* Create a new vertex and copies the information from newNode */
+	/* Create a new vertex and copies the information from pNode */
 	newVertex = (VERTEX_T*)calloc(1,sizeof(VERTEX_T));
 	if(newVertex == NULL)
 		{
 		printf("Fail to allocate new vertex - exiting");
 		exit(1);
 		}
-	newVertex->location = newNode;
+	newVertex->location = pNode;
+	strcat(key,".");
+	strcat(key,pNode->country);
+	newVertex->key = key;	
 	
 	/* Put the vertices in a list */ 
 	if (vListHead == NULL)
@@ -61,7 +87,7 @@ void addVertex(NODE_T* pNode)
 	vertexCount++;
 	}
 
-/* Adapted with permission from function by S. Goldin in file [simpleBinaryTree.c]. */
+/* Adapted with permission from function traverseInOrder by S. Goldin in file [simpleBinaryTree.c]. */
 void traverseInOrder(NODE_T* pCurrent,void (*nodeFunction)(NODE_T* pNode))
 	{
     if (pCurrent->left != NULL)
@@ -79,19 +105,24 @@ void traverseInOrder(NODE_T* pCurrent,void (*nodeFunction)(NODE_T* pNode))
 /* 'pCurrent' is the current node */
 /* 'city' is the city to be matched */
 /* 'country' is the country to be matched */	
-NODE_T* findNode(NODE_T* pCurrent,char city[32],char country[32])
+NODE_T* findNode(NODE_T* pCurrent,char city[],char country[])
 	{
-	if(pCurrent == NULL)
-		return NULL;
-	if(((strcmp(pCurrent->city,city)) == 0) && ((strcmp(pCurrent->country,country)) == 0))
-		return pCurrent;
-	NODE_T* found = findNode(pCurrent->left,city,country);
-	if(found != NULL)
-		return found;
-	return findNode(pCurrent->right,city,country);
-	}	
+	NODE_T * pFound = NULL;
+	if(pCurrent != NULL)
+		{ 
+		if(((strcasecmp(pCurrent->city,city)) == 0) && ((strcasecmp(pCurrent->country,country)) == 0))
+			pFound = pCurrent;
+		else 
+			{ 
+			pFound = findNode(pCurrent->left,city,country);
+			if(pFound == NULL)
+				pFound = findNode(pCurrent->right,city,country);
+			}
+		}
+	return pFound;
+	}
 
-/* Get information of the fl ightsand add it to the list */
+/* Get information of the flights and add it to the list */
 /* 'root' is the root node */	
 void createFlights(NODE_T* root)
 	{
@@ -187,7 +218,7 @@ VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
 	return pVertex;
 	}
 
-/* Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. */	
+/* Adapted with permission from function addEdge by S. Goldin in file [linkedListNetwork.c]. */	
 void addEdge(FLIGHT_T* pFlight)
 	{
     VERTEX_T* pFromVtx = NULL;		/* The origin vertex */
@@ -244,5 +275,5 @@ int network()
 		{
 		addEdge(currentFlight);
 		currentFlight = currentFlight->next;
-		}
+		}	
 	}
