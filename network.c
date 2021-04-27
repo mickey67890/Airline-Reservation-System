@@ -1,10 +1,10 @@
-/************************************************************/
-/* Network program										  	*/
+/****************************************************************/
+/* Network program					  	*/
 /* This program create network of locations and flight,		*/
-/* using locations as vertex and flights as edges			*/
-/* Apiravit Intharakanchit (Cheetah) 63070503457			*/
-/* PrincessConnectSummerKyaru								*/
-/************************************************************/
+/* using locations as vertex and flights as edges		*/
+/* Apiravit Intharakanchit (Cheetah) 63070503457		*/
+/* PrincessConnectSummerKyaru					*/
+/****************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,18 +44,17 @@ void freeEdgeList(VERTEX_T *pVertex)
 /* Adapted with permission from  clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
 void freeGraph()
 	{
-    VERTEX_T * pCurVertex = vListHead;
-    while (pCurVertex != NULL)
-    	{
-    	freeEdgeList(pCurVertex);
-    	VERTEX_T* pDelVtx = pCurVertex;
-    	pCurVertex = pCurVertex->next;
-    	free(pDelVtx->location);
-    	free(pDelVtx);
+	VERTEX_T * pCurVertex = vListHead;
+	while (pCurVertex != NULL)
+		{
+    		freeEdgeList(pCurVertex);
+    		VERTEX_T* pDelVtx = pCurVertex;
+    		pCurVertex = pCurVertex->next;
+    		free(pDelVtx->location);
+    		free(pDelVtx);
 		}
-
-    vListHead = NULL;  
-    vListTail = NULL; 
+	vListHead = NULL;  
+	vListTail = NULL; 
 	}	
 
 /* Get information of the node and add it to the list as a vertex */
@@ -90,15 +89,15 @@ void addVertex(NODE_T* pNode)
 /* Adapted with permission from function traverseInOrder by S. Goldin in file [simpleBinaryTree.c]. */
 void traverseInOrder(NODE_T* pCurrent,void (*nodeFunction)(NODE_T* pNode))
 	{
-    if (pCurrent->left != NULL)
-       {
-       traverseInOrder(pCurrent->left,nodeFunction); 
-       }
-    (*nodeFunction)(pCurrent);
-    if (pCurrent->right != NULL)
-       {
-       traverseInOrder(pCurrent->right,nodeFunction); 
-       }
+	if (pCurrent->left != NULL)
+		{
+		traverseInOrder(pCurrent->left,nodeFunction);
+		}
+	(*nodeFunction)(pCurrent);
+	if (pCurrent->right != NULL)
+		{
+		traverseInOrder(pCurrent->right,nodeFunction);
+		}
 	}
 
 /* Find matching node */
@@ -126,26 +125,25 @@ NODE_T* findNode(NODE_T* pCurrent,char city[],char country[])
 /* 'root' is the root node */	
 void createFlights(NODE_T* root)
 	{
-	FILE * pIn = NULL;				/* Input file */
+	FILE * pIn = NULL;			/* Input file */
 	FLIGHT_T* newFlight = NULL;		/* New flight to be added */
-	char input[256];				/* The input from file */
+	char input[256];			/* The input from file */
 	char cityDepart[32];			/* The city name of the departure location */
-    char countryDepart[32];			/* The country of the departure location */
+	char countryDepart[32];			/* The country of the departure location */
 	char cityArrive[32];			/* The city name of the arrival location */
-    char countryArrive[32];			/* The country of the arrival location */
-	int check = 0;					/* Check which line to read */
-	int round = 0;					/* Check amount to loop */
+	char countryArrive[32];			/* The country of the arrival location */
+	int check = 0;				/* Check which line to read */
+	int round = 0;				/* Check amount to loop */
 	
 	pIn = fopen("flights.txt","r");
-    if (pIn == NULL)
+	if (pIn == NULL)
 		{
-    	fprintf(stderr,"Error opening flights file - exiting\n");
+    		fprintf(stderr,"Error opening flights file - exiting\n");
 		exit(1);
 		}
-	
-    while(fgets(input,sizeof(input),pIn) != NULL)
-    	{
-    	check++;
+	while(fgets(input,sizeof(input),pIn) != NULL)
+    		{
+    		check++;
 		if(check == 1)
 			{
 			newFlight = (FLIGHT_T*)calloc(1,sizeof(FLIGHT_T));
@@ -182,8 +180,8 @@ void createFlights(NODE_T* root)
 VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
 	{
 	VERTEX_T* pVertex = NULL;		/* The vertex found */
-	VERTEX_T* currentVertex = NULL;	/* The current vertex */
-	int round = 0;					/* Check amount to loop */
+	VERTEX_T* currentVertex = NULL;		/* The current vertex */
+	int round = 0;				/* Check amount to loop */
 		
 	/* Find origin vertex */	
 	if(check == 1)
@@ -221,18 +219,18 @@ VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
 /* Adapted with permission from function addEdge by S. Goldin in file [linkedListNetwork.c]. */	
 void addEdge(FLIGHT_T* pFlight)
 	{
-    VERTEX_T* pFromVtx = NULL;		/* The origin vertex */
-    VERTEX_T* pToVtx = NULL;		/* The destination vertex */
-    EDGE_T* newEdge = NULL;			/* The new edge to be created */
+	VERTEX_T* pFromVtx = NULL;		/* The origin vertex */
+	VERTEX_T* pToVtx = NULL;		/* The destination vertex */
+	EDGE_T* newEdge = NULL;			/* The new edge to be created */
     
-    pFromVtx = findVertex(pFlight,1);
-    pToVtx = findVertex(pFlight,2);
+	pFromVtx = findVertex(pFlight,1);
+	pToVtx = findVertex(pFlight,2);
 	if ((pFromVtx == NULL) || (pToVtx == NULL))
 		{
 		printf("Fail to find vertex - exiting");
 		exit(1);
 		}
-    else
+	else
 		{
 		newEdge = (EDGE_T*) calloc(1,sizeof(EDGE_T));
 		if (newEdge == NULL)
@@ -240,7 +238,7 @@ void addEdge(FLIGHT_T* pFlight)
 			printf("Fail to allocate new edge - exiting");
 			exit(1);
 			}
-    	else
+    		else
 			{
 			newEdge->pVertex = pToVtx;
 			newEdge->flights = pFlight; 
@@ -250,13 +248,13 @@ void addEdge(FLIGHT_T* pFlight)
 				pFromVtx->edgeHead = newEdge;
 			pFromVtx->edgeTail = newEdge;
 			}
-    	}
+    		}
 	}
 
 /* Create the location network */
 int network()
 	{
-	TREE_T* pTree;					/* The tree created by tree.c */
+	TREE_T* pTree;				/* The tree created by tree.c */
 	FLIGHT_T* currentFlight;		/* The current flight */
 	int round = 0;
 	
