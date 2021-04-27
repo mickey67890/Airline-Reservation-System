@@ -60,8 +60,8 @@ typedef struct _vertex
 	int color;					/* Used for coloring the vertices during traversal */
 	struct _vertex* parent;				/* Pointer to parent vertex */  
 	struct _vertex* next;				/* Next vertex in the list */
-    EDGE_T* edgeHead;					/* Pointer to the head of the edges list */
-    EDGE_T* edgeTail;					/* pointer to the tail of the edges list */
+	EDGE_T* edgeHead;				/* Pointer to the head of the edges list */
+	EDGE_T* edgeTail;				/* pointer to the tail of the edges list */
 	} VERTEX_T;
 /******************/
 
