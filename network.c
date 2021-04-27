@@ -50,7 +50,6 @@ void freeGraph()
     		freeEdgeList(pCurVertex);
     		VERTEX_T* pDelVtx = pCurVertex;
     		pCurVertex = pCurVertex->next;
-    		free(pDelVtx->location);
     		free(pDelVtx);
 		}
 	vListHead = NULL;  
