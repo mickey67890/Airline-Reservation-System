@@ -1,22 +1,27 @@
-/****************************************************************/
-/* Network program					  	*/
-/* This program create network of locations and flight,		*/
-/* using locations as vertex and flights as edges		*/
-/* Apiravit Intharakanchit (Cheetah) 63070503457		*/
-/* PrincessConnectSummerKyaru					*/
-/****************************************************************/
+
+/************************************************************/
+/* Network program									*/
+/* This program create network of locations and flight,					*/
+/* using locations as vertex and flights as edges						*/
+/* Apiravit Intharakanchit (Cheetah) 63070503457						*/
+/* Modified to use with itinerary.c by Chayut Surathachaipong (Mickey) ID 63070503406	*/
+/* PrincessConnectSummerKyaru								*/
+/************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "network.h"
+#include "itineraries.h"
+#include "minPriorityQueueMod.h"
 
 #define HUGEVALUE 99999
-#define WHITE 0
-#define GRAY  1
-#define BLACK 2
 
+
+char* colorName[] = {"WHITE", "GRAY", "BLACK"};
 /* Adapted with permission from S. Goldin in file [linkedListNetwork.c]. */
+
 VERTEX_T* vListHead = NULL;			/* Head of the vertices list */
 VERTEX_T* vListTail = NULL;			/* Tail of the vertices list */
 
@@ -26,8 +31,10 @@ FLIGHT_T* fListTail = NULL;			/* Tail of the flights list */
 int vertexCount = 0;
 int flightCount = 0;
 
+
 /* Free the adjacencyList for a vertex */
 /* 'pVertex'  Vertex whose edges we want to delete */
+
 /* Adapted with permission from freeAdjacencyList function by S. Goldin in file [linkedListNetwork.c]. */	
 void freeEdgeList(VERTEX_T *pVertex)
 	{
@@ -42,6 +49,9 @@ void freeEdgeList(VERTEX_T *pVertex)
 	pVertex->edgeHead = NULL;
 	pVertex->edgeTail = NULL;
 	}
+	
+/* Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. */
+=======
 
 /* Free all memory associated with the graph and reset all parameters */
 /* Adapted with permission from  clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
@@ -137,9 +147,11 @@ void createFlights(NODE_T* root)
 	char cityDepart[32];			/* The city name of the departure location */
 	char countryDepart[32];			/* The country of the departure location */
 	char cityArrive[32];			/* The city name of the arrival location */
-	char countryArrive[32];			/* The country of the arrival location */
-	int check = 0;				/* Check which line to read */
-	int round = 0;				/* Check amount to loop */
+    char countryArrive[32];			/* The country of the arrival location */
+	int check = 0;					/* Check which line to read */
+	int round = 0;					/* Check amount to loop */
+	TIME_T * departure = NULL;
+	TIME_T * arrive = NULL;
 	
 	pIn = fopen("flights.txt","r");
 	if (pIn == NULL)
@@ -153,12 +165,16 @@ void createFlights(NODE_T* root)
 		if(check == 1)
 			{
 			newFlight = (FLIGHT_T*)calloc(1,sizeof(FLIGHT_T));
+			departure = calloc(1,sizeof(TIME_T));
+			arrive = calloc(1,sizeof(TIME_T));
+			
+			
 			sscanf(input,"%[^,],%[^\n]",newFlight->flightNumber,newFlight->airline);
 			}
 		else if(check == 2)
-			sscanf(input,"%[^,],%[^,],%d:%d",cityDepart,countryDepart,&newFlight->hourDepart,&newFlight->minuteDepart);
+			sscanf(input,"%[^,],%[^,],%d:%d",cityDepart,countryDepart,&departure -> hour,&departure -> min);
 		else if(check == 3)
-			sscanf(input,"%[^,],%[^,],%d:%d",cityArrive,countryArrive,&newFlight->hourArrive,&newFlight->minuteArrive);
+			sscanf(input,"%[^,],%[^,],%d:%d",cityArrive,countryArrive,&arrive -> hour,&arrive -> min);
 		else if(check == 4)
 			{
 			sscanf(input,"%d",&newFlight->price);
@@ -169,6 +185,10 @@ void createFlights(NODE_T* root)
 			{
 			newFlight->origin = findNode(root,cityDepart,countryDepart);	
 			newFlight->destination = findNode(root,cityArrive,countryArrive);
+			newFlight -> departure = departure;
+			newFlight -> arrive = arrive;
+			newFlight -> duration = diffTime(departure,arrive);
+			
 			if (fListHead == NULL)
 				fListHead = newFlight;
 			else
@@ -180,15 +200,15 @@ void createFlights(NODE_T* root)
 		}
 	}
 
-/* Find the matching vertices by comparing their city and country */
+/* Find the matching vertices by comparing their city and country 
+   Used in adding edge*/
 /* 'pFlight' is the flight node */
 /* 'check' check whether to match origin (if 1) or destiantion (if 2) */	
-VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
+VERTEX_T * findVertex(FLIGHT_T* pFlight,int check)
 	{
 	VERTEX_T* pVertex = NULL;		/* The vertex found */
-	VERTEX_T* currentVertex = NULL;		/* The current vertex */
-	int round = 0;				/* Check amount to loop */
-		
+	VERTEX_T* currentVertex = NULL;	/* The current vertex */
+	int round = 0;					/* Check amount to loop */
 	/* Find origin vertex */	
 	if(check == 1)
 		{
@@ -204,12 +224,16 @@ VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
 				currentVertex = currentVertex->next;
 			}
 		}
+		
 	/* Find destination vertex */
-	else
+	else if(check == 2)
 		{
+		
 		currentVertex = vListHead;
+		
 		for(round = 0;round < vertexCount;round++)
 			{
+			
 			if((strcmp(currentVertex->location->city,pFlight->destination->city) == 0) && (strcmp(currentVertex->location->country,pFlight->destination->country) == 0))
 				{
 				pVertex = currentVertex;	
@@ -219,6 +243,8 @@ VERTEX_T* findVertex(FLIGHT_T* pFlight,int check)
 				currentVertex = currentVertex->next;
 			}
 		}
+		
+	
 	return pVertex;
 	}
 
@@ -238,14 +264,15 @@ void addEdge(FLIGHT_T* pFlight)
 		printf("Fail to find vertex - exiting");
 		exit(1);
 		}
-	else
-		{
+    	else
+	{
 		newEdge = (EDGE_T*) calloc(1,sizeof(EDGE_T));
 		if (newEdge == NULL)
-			{
+		{
 			printf("Fail to allocate new edge - exiting");
 			exit(1);
-			}
+
+		}
     		else
 			{
 			newEdge->pVertex = pToVtx;
@@ -254,21 +281,25 @@ void addEdge(FLIGHT_T* pFlight)
 				pFromVtx->edgeTail->next = newEdge;
 			else
 				pFromVtx->edgeHead = newEdge;
+			newEdge -> weight[0] = newEdge -> flights -> duration;
+			newEdge -> weight[1] = newEdge -> flights -> price;
+			newEdge -> weight[2] = 1;
 			pFromVtx->edgeTail = newEdge;
 			}
-    		}
-	}
+    	}
+}
+
 
 /* Create the location network */
-int network()
+TREE_T * network()
 	{
-	TREE_T* pTree;				/* The tree created by tree.c */
-	FLIGHT_T* currentFlight;		/* The current flight */
+
+	TREE_T* pTree;					/* The tree created by tree.c */
+	FLIGHT_T* currentFlight = NULL;		/* The current flight */
 	int round = 0;
 	
 	/* Create location tree */
 	pTree = createTree();
-	
 	/* Create vertices of location list */
 	traverseInOrder(pTree->root,&addVertex);
 	
@@ -276,10 +307,109 @@ int network()
 	createFlights(pTree->root);
 	
 	/* Connect locations (vertex) using flights (edges) */
+	
 	currentFlight = fListHead;
 	for(round = 0;round < flightCount;round++)
 		{
 		addEdge(currentFlight);
 		currentFlight = currentFlight->next;
-		}	
+		}
+		return pTree;
 	}
+
+/*	
+ *	This function resets the addDay time indicator to zero
+ *	to start new requesting  and booing itinerary.
+ */
+void setZero()
+{
+	VERTEX_T * current = vListHead;
+	VERTEX_T * pAdjacent = NULL;
+	EDGE_T * currentEdge = NULL;
+	while(current != NULL)
+	{
+		current -> parent = NULL;
+		current -> parentEdge = NULL;
+		current -> nextEdge = NULL;
+		currentEdge = current -> edgeHead;
+		
+		while(currentEdge != NULL)
+		{
+			currentEdge -> flights -> departure -> addDay = 0;
+			currentEdge -> flights -> arrive -> addDay  = 0;
+			currentEdge = currentEdge -> next;
+		}
+		current = current -> next;
+		}	
+
+	}
+}
+/** Color all vertices to the passed color.
+ *  @param  A color constant
+ *  Adapted with permission from function by S. Goldin in file [linkedListNeetwork.c].
+ */
+void colorAll(int color)
+{
+    VERTEX_T* pVertex = vListHead;
+    while (pVertex != NULL)
+       {
+       pVertex->color = color;
+       pVertex = pVertex->next;
+       }
+}
+
+/** Initialize the dValue and parent for all
+ * vertices. dValue should be very big, parent
+ * will be set to NULL. Also add to the minPriority queue.
+ * Adapted with permission from function by S. Goldin in file [linkedListNetwork.c].
+ */
+void initAll()
+{
+    VERTEX_T* pVertex = vListHead;
+    while (pVertex != NULL)
+       {
+       pVertex->dValue[0] = HUGEVALUE;
+       pVertex -> dValue[1] = HUGEVALUE;
+       pVertex -> dValue[2] = HUGEVALUE;
+       pVertex->parent = NULL;
+       enqueueMin(pVertex);
+       pVertex = pVertex->next;
+       }
+}
+
+/** Finds the vertex that holds the passed key
+ * (if any) and returns a pointer to that vertex.
+ *
+ *@param key    -  Key we are looking for
+ *@param pPred  -  used to return the predecessor if any
+ *@return pointer to the vertex structure if one is found
+ *
+ *Adapted with permission from function by S. Goldin in file [linkedListNetwork.c]. 
+ */
+VERTEX_T * findVertexByKey(char* key, VERTEX_T** pPred) 
+{
+    VERTEX_T * pFoundVtx = NULL;
+    VERTEX_T * pCurVertex = vListHead;
+    *pPred = NULL;
+    /* while there are vertices left and we haven't found
+     * the one we want.
+     */
+    while ((pCurVertex != NULL) && (pFoundVtx == NULL))
+       {
+       if (strcasecmp(pCurVertex-> location -> city,key) == 0)
+          {
+	  pFoundVtx = pCurVertex;
+	  }
+       else
+          {
+	  *pPred = pCurVertex;
+          pCurVertex = pCurVertex->next;
+          }
+       }
+    return pFoundVtx;
+}
+
+
+
+
+
