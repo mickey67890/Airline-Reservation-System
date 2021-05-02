@@ -1,10 +1,10 @@
-/************************************************************/
-/* Tree program											  	*/
-/* This program create tree of locations,				  	*/
+/****************************************************************/
+/* Tree program							*/
+/* This program create tree of locations,		  	*/
 /* each node contains the name of the city and its country	*/
-/* Apiravit Intharakanchit (Cheetah) 63070503457			*/
-/* PrincessConnectSummerKyaru								*/
-/************************************************************/
+/* Apiravit Intharakanchit (Cheetah) 63070503457		*/
+/* PrincessConnectSummerKyaru					*/
+/****************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +13,7 @@
 
 /* Debug Functions */
 /*******************/
-void printNodeDataDebug(NODE_T* node);									/* Print out the name and gender of the node */
+void printNodeDataDebug(NODE_T* node);						/* Print out the name and gender of the node */
 void printAllDebug(NODE_T* node,void (*function)(NODE_T* node));		/* In order traverse the tree and print each node */
 /*******************/
 
@@ -29,11 +29,11 @@ void freeNode(NODE_T* node)
 /* 'function' is the the function to be executed */
 void freeAll(NODE_T* node,void (*function)(NODE_T* node))
 	{
-    if (node->left != NULL)
-       freeAll(node->left,function); 
-    if (node->right != NULL)
-       freeAll(node->right,function); 
-    (*function)(node);
+	if (node->left != NULL)
+		freeAll(node->left,function); 
+	if (node->right != NULL)
+		freeAll(node->right,function); 
+	(*function)(node);
 	} 
 
 /* Free the tree */
@@ -59,37 +59,37 @@ void insertNode(NODE_T* currentNode,NODE_T * newNode)
 		if (strcmp(newNode->city,currentNode->city) < 0)
 			{
 			if (currentNode->left == NULL)
-        		currentNode->left = newNode;
-    		else
-        		insertNode(currentNode->left,newNode); 
+        			currentNode->left = newNode;
+    			else
+        			insertNode(currentNode->left,newNode); 
 			}	
 		else
-    		{
-    		if (currentNode->right == NULL)
-        		currentNode->right = newNode;
-    		else
-        		insertNode(currentNode->right,newNode); 
+    			{
+    			if (currentNode->right == NULL)
+        			currentNode->right = newNode;
+    			else
+        			insertNode(currentNode->right,newNode); 
+    			}
     		}
-    	}
 	/* If the cities name are identical */
 	/* Use country instead */
-    else
-    	{
+	else
+    		{
 		if (strcmp(newNode->country,currentNode->country) < 0)
 			{
 			if (currentNode->left == NULL)
-        		currentNode->left = newNode;
-    		else
-        		insertNode(currentNode->left,newNode); 
+        			currentNode->left = newNode;
+    			else
+        			insertNode(currentNode->left,newNode); 
 			}	
 		else
-    		{
-    		if (currentNode->right == NULL)
-        		currentNode->right = newNode;
-    		else
-        		insertNode(currentNode->right,newNode); 
+    			{
+    			if (currentNode->right == NULL)
+        			currentNode->right = newNode;
+    			else
+        			insertNode(currentNode->right,newNode); 
+    			}
     		}
-    	}
 	}  
 
 /* Create the location tree */
@@ -97,40 +97,40 @@ void insertNode(NODE_T* currentNode,NODE_T * newNode)
 TREE_T* createTree()
 	{
 	FILE * pIn = NULL;			/* Input file */
-    TREE_T* pTree = NULL;		/* The tree */
-    NODE_T* location = NULL;	/* The location node */
-    char input[256];			/* The input from file */
-    char city[32];				/* The city name of the location */
-    char country[32];			/* The country of the location */
+	TREE_T* pTree = NULL;			/* The tree */
+	NODE_T* location = NULL;		/* The location node */
+	char input[256];			/* The input from file */
+	char city[32];				/* The city name of the location */
+	char country[32];			/* The country of the location */
     
-    pIn = fopen("location.txt","r");
-    if (pIn == NULL)
+	pIn = fopen("location.txt","r");
+	if (pIn == NULL)
 		{
-    	fprintf(stderr,"Error opening location file - exiting\n");
+    		fprintf(stderr,"Error opening location file - exiting\n");
 		exit(1);
 		}
     
-    pTree = calloc(1,sizeof(TREE_T));
-    while(fgets(input,sizeof(input),pIn) != NULL)
-    	{
+	pTree = calloc(1,sizeof(TREE_T));
+	while(fgets(input,sizeof(input),pIn) != NULL)
+    		{
 		sscanf(input,"%s %s",city,country);
 		location = (NODE_T*) calloc(1,sizeof(NODE_T));
 		if (location == NULL)
 			{
-    		printf("Error allocating location array - exiting\n");
-        	exit(1);
-        	}
-        else
-        	{
-        	strcpy(location->city,city);
-			strcpy(location->country,country);
-        	if(pTree->root == NULL)
-        		{
-        		pTree->root = location;
-        		pTree->nodeCount++;
+    			printf("Error allocating location array - exiting\n");
+        		exit(1);
         		}
         	else
         		{
+        		strcpy(location->city,city);
+			strcpy(location->country,country);
+        		if(pTree->root == NULL)
+        			{
+        			pTree->root = location;
+        			pTree->nodeCount++;
+        			}
+        		else
+        			{
 				insertNode(pTree->root,location);
 				pTree->nodeCount++;
 				}
@@ -138,13 +138,13 @@ TREE_T* createTree()
 		}
 	fclose(pIn);
     
-    /* Debug */
-    /*********
-    printAllDebug(pTree->root,&printNodeDataDebug);
-    freeTree(pTree);
-    /*********/
+	/* Debug */
+	/*********
+	printAllDebug(pTree->root,&printNodeDataDebug);
+	freeTree(pTree);
+	/*********/
     
-    return pTree;
+	return pTree;
 	}
 
 /* Debug Functions */
@@ -161,10 +161,10 @@ void printNodeDataDebug(NODE_T* node)
 /* 'function' is the the function to be executed */
 void printAllDebug(NODE_T* node,void (*function)(NODE_T* node))
 	{
-    if (node->left != NULL)
-       printAllDebug(node->left,function); 
-    (*function)(node);
-    if (node->right != NULL)
-       printAllDebug(node->right,function); 
+	if (node->left != NULL)
+		printAllDebug(node->left,function); 
+	(*function)(node);
+	if (node->right != NULL)
+		printAllDebug(node->right,function); 
 	}
 /*******************/

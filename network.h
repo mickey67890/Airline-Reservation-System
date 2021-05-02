@@ -1,4 +1,5 @@
 /********************************************************/
+
 /* Network header							  		*/
 /* Define the function to create and traverse a network					*/
 /* Apiravit Intharakanchit (Cheetah) 63070503457						*/
@@ -12,16 +13,16 @@
 /***************/
 typedef struct _node
 	{
-	struct _node* left;			/* Left child of the node */
-	struct _node* right;		/* right child of thee node */
-	char city[32];				/* The city of the location, used as key */
-	char country[32];			/* The country of the location, used as secondary key */
+	struct _node* left;				/* Left child of the node */
+	struct _node* right;				/* right child of thee node */
+	char city[32];					/* The city of the location, used as key */
+	char country[32];				/* The country of the location, used as secondary key */
 	} NODE_T;
 	
 typedef struct _tree
 	{
-	NODE_T* root;				/* Root of the tree */
-	int nodeCount;				/* Number of nodes in the tree */
+	NODE_T* root;					/* Root of the tree */
+	int nodeCount;					/* Number of nodes in the tree */
 	} TREE_T;
 /***************/
 
@@ -45,6 +46,7 @@ typedef struct _flight
 	int seat[31];					/* Number of seat left */
 	int duration;					/* Duration of the flight in minutes */
 	int price;					/* Price of the flight in baht */
+
 	struct _flight* next;				/* Next flight in the list */
 	} FLIGHT_T;
 /* For the weight of this edge, use either duration or price variable of flights */
@@ -63,10 +65,12 @@ typedef struct _edge
 typedef struct _vertex
 	{
 	NODE_T* location;				/* The location of this vertex */
+
 	int dValue[3];					/* Total weight so far, for Dijkstra's algorithm
 							 * Index 0 holds the duration , index 1 holds the price
 							 * and index 2 holds the segment value (1) */
-							 
+	char* key;					/* Key of the vertex */
+
 	int color;					/* Used for coloring the vertices during traversal */
 	struct _vertex* parent;				/* Pointer to parent vertex */  
 	struct _vertex* next;				/* Next vertex in the list */
@@ -74,6 +78,7 @@ typedef struct _vertex
 	EDGE_T* edgeTail;				/* pointer to the tail of the edges list */
 	EDGE_T * parentEdge;				/* Pointer to the previous flight for finding the itinerary */
     	EDGE_T * nextEdge;				/* Pointer to the next flight for booking */
+
 	} VERTEX_T;
 /******************/
 
@@ -83,15 +88,6 @@ typedef struct _vertex
 /* Return the pointer to the tree */
 TREE_T * createTree();
 
-/* Free the node */
-/* 'person' is the node */
-void freeNode(NODE_T* node);
-
-/* Post order traverse the tree and free each node */
-/* 'person' is the current node */
-/* 'function' is the the function to be executed */
-void freeAll(NODE_T* node,void (*function)(NODE_T* node));
-
 /* Free the tree */
 /* 'pTree' is the tree */
 void freeTree(TREE_T * pTree);
@@ -99,6 +95,10 @@ void freeTree(TREE_T * pTree);
 
 /* Location Network */
 /********************/
+/* Traverse a tree (in order traversal) and execute the */
+/* function 'nodeFunction' on each element */
+/* 'pCurrent' is the current node */
+/* 'nodeFunction' is function to execute on each node */
 /* Adapted with permission from function by S. Goldin in file [simpleBinaryTree.c]. */
 void traverseInOrder(NODE_T* pCurrent,void (*nodeFunction)(NODE_T* pNode));
 
@@ -112,6 +112,10 @@ NODE_T* findNode(NODE_T* pCurrent,char city[32],char country[32]);
 /* 'pFlight' is the flight node */
 /* 'check' check whether to match origin (if 1) or destiantion (if 2) */	
 VERTEX_T* findVertex(FLIGHT_T* pFlight,int check);
+
+/* Free all memory associated with the graph and reset all parameters */
+/* Adapted with permission from clearGraph function by S. Goldin in file [linkedListNetwork.c]. */	
+void freeGraph();
 
 /* Create the location network */
 TREE_T * network();
